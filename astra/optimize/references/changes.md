@@ -10,7 +10,10 @@ These change what users or operators observe, so prototype, measure and propose 
 - Consistency: sync → async, strict → eventual, write batching delays.
 - Features and platforms: removing unused features, limiting CPUs with `target-cpu=native` or `GOAMD64=v3`.
 - Build and runtime settings: `panic = "abort"` (no Drop, no `catch_unwind`), strip and `-ldflags="-s -w"` (no symbols in stack traces, no debug info), GC tuning (`GOGC`, `GOMEMLIMIT`) and allocator swaps (mimalloc, jemalloc) that change RSS and pause times.
-- Architecture: process layout, storage choice, where computation runs (client, server, build time).
+- Durability and guarantees: fsync and commit settings, isolation levels, replication acknowledgment, retention periods.
+- What users see: image and texture quality, fonts, animations, render resolution and upscaling, LOD distances, supported browsers, OS versions and devices.
+- Schema and data model: migrations, denormalization that changes write paths.
+- Architecture: process layout, storage and database choice, where computation runs (client, edge, server, build time), CPU architecture and region of the infrastructure.
 
 Each proposal states the behavior that changes, the measured gain, and the affected callers and users.
 
