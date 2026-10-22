@@ -20,3 +20,7 @@ Changes users can see (image quality, font choice, dropped animations, supported
 ## Tools
 
 Lighthouse and Lighthouse CI, WebPageTest, Chrome DevTools Performance, Coverage and Memory panels, `web-vitals`, bundle analyzers (`esbuild --metafile`, `rollup-plugin-visualizer`, `source-map-explorer`), `size-limit`.
+
+## With bench.py
+
+`--before` and `--after` are the URLs of the two builds. A locked `bench/measure-page.sh {cmd}` runs Lighthouse with a fixed device and throttling profile and prints `{"lcp_ms": …, "tbt_ms": …, "bytes": …}` from `audits["largest-contentful-paint"].numericValue`, `audits["total-blocking-time"].numericValue` and `audits["total-byte-weight"].numericValue`. `--check` compares the rendered DOM or a screenshot diff within a set tolerance.

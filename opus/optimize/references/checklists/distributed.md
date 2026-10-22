@@ -17,3 +17,7 @@ Weaker consistency, fewer replicas, async replication, and changed partitioning 
 ## Tools
 
 Distributed tracing (OpenTelemetry, Jaeger), per-hop latency histograms, chaos and load tools that reproduce tail behavior.
+
+## With bench.py
+
+`--before` and `--after` name two deployments of the same topology. A locked `bench/measure-trace.sh {cmd}` drives a fixed load and prints `{"p99_ms": …, "hops": …, "bytes_per_request": …}` from the trace backend; `--check` compares responses for a fixed request set.

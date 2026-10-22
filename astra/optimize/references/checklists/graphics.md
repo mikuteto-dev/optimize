@@ -19,3 +19,7 @@ Changes users can see (resolution scaling, upscaling such as FSR or DLSS, LOD di
 ## Tools
 
 RenderDoc, Xcode GPU frame capture and Metal System Trace, PIX, Nsight Graphics, Spector.js, Tracy, Unity Profiler and Frame Debugger, Unreal Insights.
+
+## With bench.py
+
+`--before` and `--after` are the two builds. A locked `bench/measure-frames.sh {cmd} {out}` plays a fixed camera path on the weakest target device, prints `{"frame_p99_ms": …, "gpu_ms": …, "cpu_ms": …, "vram_mib": …}` from the engine's frame-time export, and saves fixed-frame screenshots to `{out}`; `--check` compares them within an image-difference tolerance.

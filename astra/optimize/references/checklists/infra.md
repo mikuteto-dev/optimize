@@ -17,3 +17,7 @@ Changing CPU architecture (ARM instances), regions, provisioned capacity, or ret
 ## Tools
 
 `dive` for image layers, cloud cost explorers, provider metrics dashboards, build tracing (`--profile` flags, BuildKit timings).
+
+## With bench.py
+
+For images, `--before` and `--after` are image tags and `--measure 'printf "{\"image_bytes\": %s}\n" $(docker image inspect --format "{{.Size}}" {cmd})'` (bench.py only fills `{cmd}`, `{input}`, `{out}` and `{variant}`, so Go-template braces pass through). Cold start and cost come from a locked script that deploys to a disposable environment and reads the provider's metrics.

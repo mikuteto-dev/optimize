@@ -20,3 +20,7 @@ Moving work to queues or background jobs changes consistency and needs the user.
 ## Tools
 
 wrk2, vegeta, k6, `go tool pprof`, async-profiler, `perf`, `samply`, OpenTelemetry traces, flame graphs per endpoint.
+
+## With bench.py
+
+`--before` and `--after` are the base URLs of the two builds. A locked `bench/measure-load.sh {cmd}` runs k6 with a `constant-arrival-rate` scenario, `--summary-trend-stats "p(50),p(99)"` and `--summary-export`, and prints `{"p50_ms": …, "p99_ms": …, "rps": …}`; pass `--higher-better rps`. `--check` replays a fixed request set against both and compares responses.

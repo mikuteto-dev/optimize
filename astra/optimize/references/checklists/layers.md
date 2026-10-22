@@ -13,3 +13,7 @@ Program-level layers that apply to any code. Use this to check the candidate led
 9. **Runtime and language**: `no_std`, a different language.
 
 When binary size or startup time is the primary metric, every linked byte is in scope, not just the hot path.
+
+## With bench.py
+
+Programs use the default mode. Functions too short to time as a process go through the language harness inside `--measure` (criterion, `go test -bench`, mitata), printing one per-operation number such as `{"ns_op": …, "allocs_op": …}`.

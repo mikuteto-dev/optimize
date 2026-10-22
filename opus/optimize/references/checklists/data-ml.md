@@ -17,3 +17,7 @@ Mixed precision (bf16, fp16), quantization (int8, int4), pruning, distillation a
 ## Tools
 
 `torch.profiler`, Nsight Systems, `nvidia-smi dmon`, `py-spy`, `memray`, `scalene`, DuckDB `EXPLAIN ANALYZE`, Spark UI.
+
+## With bench.py
+
+The default mode times a job on `{input}` writing `{out}`. A `--measure` wrapper adds `{"rows_per_s": …, "peak_vram_mib": …}` with `--higher-better rows_per_s`; `--check` compares outputs exactly, or within the tolerance the user accepts for floating-point results.

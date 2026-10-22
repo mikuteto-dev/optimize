@@ -20,3 +20,7 @@ Schema migrations, isolation level changes, and durability settings (`synchronou
 ## Tools
 
 `pg_stat_statements`, `auto_explain`, `pgbench`, MySQL `performance_schema`, SQLite `.eqp on` and `sqlite3_analyzer`.
+
+## With bench.py
+
+`--before` and `--after` are SQL files (or schema migrations applied to a disposable copy). A locked `bench/measure-query.sh {cmd} {out}` runs `EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON)`, prints `{"exec_ms": …, "shared_read_blocks": …}` from `"Execution Time"` and the plan's `"Shared Read Blocks"`, and writes the query's rows to `{out}`; `--check` compares the rows sorted.

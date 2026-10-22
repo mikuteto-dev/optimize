@@ -16,3 +16,7 @@ Flash and RAM use per section, maximum stack depth, cycles per hot function, int
 ## Tools
 
 `arm-none-eabi-size`, linker map files, `-fstack-usage`, `cargo bloat`, the DWT cycle counter (`CYCCNT`), logic analyzers, power profilers (Nordic PPK2, Joulescope).
+
+## With bench.py
+
+`--before` and `--after` are the two firmware images. A locked `bench/measure-fw.sh {cmd} {out}` prints `{"flash_bytes": …, "ram_bytes": …}` from `arm-none-eabi-size`, and, when hardware is attached, flashes the image, reads `cycles` and `current_ua` over serial or the power profiler, and writes the device's test output to `{out}` for `--check`.

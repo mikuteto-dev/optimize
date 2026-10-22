@@ -18,3 +18,7 @@ Removing features, lowering image quality, and dropping OS versions need the use
 ## Tools
 
 Android Studio profilers, Perfetto, Macrobenchmark, Xcode Instruments (Time Profiler, Allocations, Energy Log, App Launch), MetricKit, `os_signpost`.
+
+## With bench.py
+
+`--before` and `--after` are the two release builds. A locked `bench/measure-app.sh {cmd}` installs the build on the attached low-end device, runs Macrobenchmark or an `xctrace` App Launch recording, and prints `{"startup_ms": …, "jank_frames": …, "size_bytes": …}`.

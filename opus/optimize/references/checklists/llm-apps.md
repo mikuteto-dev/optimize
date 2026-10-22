@@ -17,3 +17,7 @@ Switching to a smaller or different model, lowering effort, and dropping context
 ## Tools
 
 Provider usage fields (tokens, cache reads and writes), token counting endpoints, request tracing, an evaluation set run before and after.
+
+## With bench.py
+
+`--before` and `--after` are the two pipeline versions. A locked `bench/measure-llm.sh {cmd} {out}` runs a fixed task set, prints `{"input_tokens": …, "cached_tokens": …, "output_tokens": …, "latency_ms": …, "cost_usd": …}` from the provider's usage fields, and writes the answers to `{out}`; `--check` scores them against the evaluation set and fails below the agreed threshold. Pass `--higher-better cached_tokens`.

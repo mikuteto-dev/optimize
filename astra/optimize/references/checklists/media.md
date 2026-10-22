@@ -17,3 +17,7 @@ Changing codecs, containers, bitrates, resolution or quality targets changes com
 ## Tools
 
 `ffmpeg -benchmark`, `ffprobe`, VMAF (`libvmaf`), Xcode Instruments, Nsight Systems, platform audio tracing (CoreAudio HAL logs, Perfetto).
+
+## With bench.py
+
+The default mode times a processing command on `{input}` media writing `{out}`. A `--measure` wrapper adds `{"rtf": …, "bytes": …}` (processing seconds ÷ media seconds from `ffprobe`, output size); `--check` runs VMAF on `{expected}` and `{actual}` and fails below the agreed score.

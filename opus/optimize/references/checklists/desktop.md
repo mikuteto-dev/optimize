@@ -16,3 +16,7 @@ Switching frameworks (Electron to Tauri or native, which uses the system webview
 ## Tools
 
 `hyperfine` for CLI startup, Xcode Instruments, Activity Monitor energy impact, Electron `--trace-startup` and Chrome tracing, `process.memoryUsage()` per process, Windows Performance Analyzer, `perf`.
+
+## With bench.py
+
+CLIs use the default mode (wall time and max RSS per process). For GUI apps, a locked `bench/measure-app.sh {cmd}` launches the build, waits for a readiness marker (a log line or `os_signpost`), and prints `{"startup_ms": …, "rss_mib": …}` summed over all of its processes.

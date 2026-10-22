@@ -15,6 +15,32 @@
 - Save raw measurements to a file.
 - Decide with a significance test (`benchstat`, p < 0.05). Deterministic metrics (instruction count, allocation count, binary size) can be compared directly.
 
+## scripts/bench.py
+
+`bench.py` owns how numbers are counted; the field's own tool owns how they are measured. It interleaves before and after in random order, adds an input from a new random seed on every invocation (`--gen`), checks every run's output against the old implementation, writes raw rows to `bench/runs/`, and reports medians, gain and Mann-Whitney p for every metric.
+
+Three ways to measure:
+
+1. **A command that reads `{input}`** and prints its result: wall time and max RSS of the process tree are measured, stdout is compared byte for byte. If the command writes a file instead, put `{out}` in it.
+2. **`--measure '<cmd>'`** for anything else: it receives `{cmd}` (the `--before` or `--after` string), `{input}`, `{out}` and `{variant}`, and prints a JSON object of numbers on its last line. Put longer measure commands in a script under `bench/` and lock it.
+3. **Microbenchmarks** below the cost of starting a process: run the language's own harness (criterion, `go test -bench`, mitata) inside `--measure` and print its per-operation number.
+
+Output checks: byte-identical by default; `--check '<cmd>'` replaces it with any command that exits 0 when `{expected}` and `{actual}` match (tolerances, sorted lines, API responses). With `--measure` and no `--check`, nothing is verified and the script says so.
+
+```sh
+# a CLI, plus a generated input with a new seed
+bench.py run --name simd-scan --before './old {input}' --after './new {input}' \
+  --input data/real.ndjson --gen 'node gen.mjs --seed {seed} --out {out}'
+
+# binary size
+bench.py run --name lto --before old/app --after new/app \
+  --measure 'printf "{\"bytes\": %s}\n" $(wc -c < {cmd})' --primary bytes
+
+# any field tool behind a locked script that prints one JSON line
+bench.py run --name index-on-user --before before.sql --after after.sql \
+  --measure 'bench/measure-query.sh {cmd} {out}' --check 'bench/same-rows.sh {expected} {actual}'
+```
+
 ## Numbers that do not count
 
 - Input-specific changes: hard-coded values or sizes, embedded or cached results for the benchmark input.

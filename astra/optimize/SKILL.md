@@ -23,7 +23,7 @@ Local and reversible, so go ahead without asking: build, run benchmarks, load te
 
 - `bench/candidates.md`: columns `candidate | area | kind | status | before | after | p | raw`; `kind` is `structural` or `shortcut`; `status` is `untested`, `kept`, `reverted` or `needs user`.
 - Lock the benchmark, tests, generators and reference before the first change: `python3 scripts/bench.py lock <globs>`.
-- Measure each candidate: `python3 scripts/bench.py run --name <candidate> --before '<old cmd> {input}' --after '<new cmd> {input}' --input <file> --gen '<generator> --seed {seed} --out {out}'`. Fresh process per run, interleaved, a new random-seed input every time, outputs compared with the old implementation, medians, max RSS and p reported. A mismatch does not count. For pages, services or queries, use the field's tool and write raw results to `bench/runs/`.
+- Measure each candidate: `python3 scripts/bench.py run --name <candidate> --before '<old cmd> {input}' --after '<new cmd> {input}' --input <file> --gen '<generator> --seed {seed} --out {out}'`. Interleaved, a new random-seed input every time, every output checked against the old implementation, raw rows logged, medians, gain and p reported. A mismatch does not count. For pages, services, queries, sizes or microbenchmarks, pass `--measure '<locked script>'` printing a JSON object of numbers and `--check '<cmd>'` for comparing outputs; the checklists show each field's form and [references/benchmarking.md](references/benchmarking.md) has the contract.
 
 ## Good work
 

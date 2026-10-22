@@ -18,3 +18,7 @@ Lower precision, looser tolerances, and approximate methods change results and n
 ## Tools
 
 `perf`, Intel VTune and Advisor (roofline), `likwid`, Nsight Compute, Xcode Instruments, `valgrind --tool=cachegrind`.
+
+## With bench.py
+
+The default mode works for kernels run as programs that print their result. Add `gflops` and `gbps` by having a locked `--measure` script divide the known operation and byte counts by the measured time, with `--higher-better gflops,gbps`. `--check` compares results within the numerical tolerance the user accepts.
