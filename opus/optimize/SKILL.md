@@ -38,7 +38,11 @@ Readability, code size and convention are not reasons to drop a candidate; the u
 
 ## Domains
 
-Read the files for the systems the task touches:
+No list of fields is complete, so the method comes first: [references/any-system.md](references/any-system.md) derives metrics and levers for any system by drawing the path from input to result, listing what each component consumes, applying the generic levers (less, once, smaller, closer, together, parallel, better timing, better hardware, better algorithm), and pulling in the field's own guides, profilers and best known implementation. Use it for every task, including fields with no file below.
+
+When the task touches more than one system, also read [references/cross-domain.md](references/cross-domain.md): the primary metric becomes the end-to-end one, a trace across tiers decides where to start, candidates from all domains go into one list, and a change that only moves cost from one tier to another does not count.
+
+Worked examples per field, read for the systems the task touches:
 
 - Web frontend (bytes, requests, Core Web Vitals, main thread): [references/domains/web-frontend.md](references/domains/web-frontend.md)
 - Backend services (tail latency, throughput, round trips): [references/domains/backend.md](references/domains/backend.md)
@@ -48,6 +52,11 @@ Read the files for the systems the task touches:
 - Embedded (flash, RAM, cycles, current): [references/domains/embedded.md](references/domains/embedded.md)
 - Data pipelines and ML (throughput, VRAM, GPU idle time): [references/domains/data-ml.md](references/domains/data-ml.md)
 - Infrastructure and cloud cost (images, sizing, cold start, egress): [references/domains/infra.md](references/domains/infra.md)
+- Distributed systems (fan-out, hops, coordination): [references/domains/distributed.md](references/domains/distributed.md)
+- Desktop apps and CLIs (startup, idle, multi-process memory): [references/domains/desktop.md](references/domains/desktop.md)
+- Audio, video and images (real-time factor, hardware codecs, underruns): [references/domains/media.md](references/domains/media.md)
+- Numerical and scientific computing (roofline, BLAS, tiling): [references/domains/hpc.md](references/domains/hpc.md)
+- LLM and agent apps (tokens, cache hits, calls per task): [references/domains/llm-apps.md](references/domains/llm-apps.md)
 
 ## Honest numbers
 

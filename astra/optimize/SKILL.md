@@ -36,8 +36,10 @@ These are local and reversible, so do them without asking: build, run benchmarks
 
 ## Where to look
 
+- Any system, including fields with no file here: [references/any-system.md](references/any-system.md) (draw the path, list what each component consumes, apply the generic levers, pull in the field's own guides and best known implementation)
 - Program-level layers, from removing work to changing languages: [references/layers.md](references/layers.md)
-- The systems the task touches: [web frontend](references/domains/web-frontend.md), [backend](references/domains/backend.md), [database](references/domains/database.md), [3D and games](references/domains/graphics.md), [mobile](references/domains/mobile.md), [embedded](references/domains/embedded.md), [data and ML](references/domains/data-ml.md), [infrastructure and cost](references/domains/infra.md)
+- Worked examples per field: [web frontend](references/domains/web-frontend.md), [backend](references/domains/backend.md), [database](references/domains/database.md), [3D and games](references/domains/graphics.md), [mobile](references/domains/mobile.md), [embedded](references/domains/embedded.md), [data and ML](references/domains/data-ml.md), [infrastructure and cost](references/domains/infra.md), [distributed systems](references/domains/distributed.md), [desktop and CLI](references/domains/desktop.md), [audio, video and images](references/domains/media.md), [numerical computing](references/domains/hpc.md), [LLM and agent apps](references/domains/llm-apps.md)
+- More than one of those: [references/cross-domain.md](references/cross-domain.md) (end-to-end metric, tracing across tiers, moving work between tiers, cost shifting)
 - Dependencies (configure, switch, fork, write your own) and language comparisons: [references/changes.md](references/changes.md)
 - Commands per language: [references/tools.md](references/tools.md)
 
