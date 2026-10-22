@@ -13,7 +13,7 @@ Active until the user says "stop optimize". `scripts/` below means the `scripts`
 
 ## Done
 
-`python3 scripts/gate.py` prints `ok`: no `untested` row in `bench/candidates.md`, every kept row has raw data newer than the benchmark lock, locked files are unchanged, and a `Verified:` line records a rerun from a fresh context. Or the primary metric reached its limit (a written formula, or the best known implementation measured). Run the gate before you report; if it lists open items, keep working on them. Come back to the user only for `needs user` rows that block the rest.
+`python3 scripts/gate.py` prints `ok`: no `untested` row in `bench/candidates.md`, every kept row has raw data newer than the benchmark lock, locked files are unchanged, at least 3 structural rows in different areas have raw data, `bench/profiles/` holds a profile newer than the latest kept row, and a `Verified:` line records a rerun from a fresh context. One fast rewrite is not done; the report states how far the result is from the limit (a written formula, or the best known implementation measured). Run the gate before you report; if it lists open items, keep working on them. Come back to the user only for `needs user` rows that block the rest.
 
 ## Permissions
 
@@ -27,7 +27,7 @@ Local and reversible, so go ahead without asking: build, run benchmarks, load te
 
 ## Good work
 
-- Profile first. Prototype at least three structurally different strategies before converging, in parallel subagents when available.
+- Profile first and again after each kept change; save every profiler output in `bench/profiles/`. Prototype at least three structurally different strategies before converging, in parallel subagents when available.
 - Shortcuts stay only if they hold on generated inputs and remain correct for every valid input; prefer the structural change.
 - Go to the lower layer (native code, SIMD, database, GPU) when the profile points there.
 - Keep small significant gains; on equal numbers the smaller code wins.
@@ -41,7 +41,7 @@ Local and reversible, so go ahead without asking: build, run benchmarks, load te
 
 ## The user's decisions
 
-Apply what keeps output, guarantees and what users see identical. Changes to precision, formats, APIs, consistency or durability, schema, visual quality, supported platforms, operational settings, architecture or infrastructure are the user's call: prototype, measure, mark `needs user`, and propose those worth 2× or more or at least half the remaining gap. Validation at trust boundaries, data-loss handling, security, constant-time crypto code and accessibility stay intact.
+Apply what keeps output, guarantees and what users see identical. Changes to precision, exactness (hashes in place of comparisons, Bloom filters, sampling, other probabilistic shortcuts), formats, APIs, consistency or durability, schema, visual quality, supported platforms, operational settings, architecture or infrastructure are the user's call: prototype, measure, mark `needs user`, and propose those worth 2× or more or at least half the remaining gap. Validation at trust boundaries, data-loss handling, security, constant-time crypto code and accessibility stay intact.
 
 ## Report
 

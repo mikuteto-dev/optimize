@@ -90,6 +90,16 @@ def problems(root):
                 out.append(f"Kept candidate measured before the current lock: {next(iter(r.values()), '')}")
     else:
         out.append("bench/.lock is missing. Lock the benchmark, tests, generators and reference with scripts/bench.py lock before measuring.")
+    measured = [r for r in rows if r.get("kind", "").lower() == "structural" and r.get("status", "").lower() != OPEN and (root / r.get("raw", "")).is_file()]
+    if len({r.get("area", "").lower() for r in measured}) < 3:
+        out.append("Fewer than 3 structural candidates in different areas measured with bench.py. Prototype and measure structurally different strategies (algorithm, data layout, language or library, architecture, lower layer) before converging.")
+    pdir = root / "bench/profiles"
+    profiles = [p.stat().st_mtime for p in pdir.rglob("*") if p.is_file()] if pdir.is_dir() else []
+    kept = [(root / r["raw"]).stat().st_mtime for r in rows if r.get("status", "").lower() == "kept" and (root / r.get("raw", "")).is_file()]
+    if not profiles:
+        out.append("bench/profiles/ is empty. Profile the workload with the field's profiler, save the output there, and add the candidates it points to.")
+    elif kept and max(profiles) < max(kept):
+        out.append("No profile of the current version in bench/profiles/. Profile the latest kept version, save it there, and add the candidates it points to.")
     text = ledger.read_text(errors="replace").lower()
     if rows and not any(l.startswith("verified:") for l in text.splitlines()):
         out.append("No 'Verified:' line. Have a fresh context rerun the benchmark and output comparison from the ledger alone, then record the result as 'Verified: <who> <date> <result>'.")
