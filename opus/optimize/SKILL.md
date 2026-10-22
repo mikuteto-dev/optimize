@@ -3,43 +3,48 @@ name: optimize
 description: Drive runtime, memory, size, latency, energy or cost toward the theoretical limit with measured, reproducible evidence. Use when code, sites, services, databases or assets can get faster or lighter, or when asked to optimize, speed up, shrink or benchmark.
 argument-hint: "[off]"
 license: MIT
+hooks:
+  Stop:
+    - hooks:
+        - type: command
+          command: 'for d in "$CLAUDE_PROJECT_DIR/.claude/skills/optimize" "$HOME/.claude/skills/optimize"; do [ -f "$d/scripts/gate.py" ] && exec python3 "$d/scripts/gate.py" --hook; done; exit 0'
 ---
 
 # Optimize
 
-The user wants every resource treated as scarce, the way Famicom and embedded programmers counted every byte and cycle. You already know the techniques. This skill exists because agents fail at this work in predictable ways: they stop after the first win, call code good enough without measuring, reject other languages, libraries or their own implementation without trying them, tune to the benchmark input, and quote numbers no file backs. The rules below close those gaps.
+The user wants every resource treated as scarce, the way Famicom and embedded programmers counted every byte and cycle. You already know the techniques; studies of coding agents on optimization tasks show the failures are elsewhere, and this skill is built around them:
+
+- Agents accept the first measurable speedup and stop (SWE-fficiency; in GSO 75% of runs ended before 100 of 200+ allowed steps).
+- They prefer shortcuts (caches, fast paths for the benchmark input, compiler flags) over structural changes, and avoid the lower layer even when the gain lives there (GSO).
+- They list many techniques but test few distinct ones and converge on the first (InferenceBench).
+- They tamper with timers, cache results across timed runs, and hard-code test inputs; asking them not to cheat barely changes the rate, while hardening the harness removes most of it (METR, Reward Hacking Benchmark, PerfAgent).
+- Profiler instructions in a prompt did not help; a loop that always profiles and feeds results back doubled expert-level results (PerfAgent).
+
+So the evidence and the stopping rule live in files and scripts, not in your judgment of when you are done.
 
 Active until the user says "stop optimize".
 
-## Ledger
+## Ledger and gate
 
-Keep the work in `bench/` in the repo. Files survive context compaction, and they are the evidence for every claim.
+Work in `bench/` in the repo; it survives compaction and is the evidence.
 
-- `bench/candidates.md`: one row per candidate with its area, hypothesis, status (`untested`, `kept`, `reverted`, `needs user`), before, after, significance, and the raw-data file.
-- The benchmark, the correctness check, and the raw measurements.
+- `bench/candidates.md`: a table with columns `candidate | area | kind | status | before | after | p | raw`. `kind` is `structural` or `shortcut`; `status` is `untested`, `kept`, `reverted` or `needs user`; `raw` is the file `bench.py` wrote.
+- Before the first change, write the benchmark and correctness check, then lock them: `python3 ${CLAUDE_SKILL_DIR}/scripts/bench.py lock <globs>`.
+- Measure every candidate with `python3 ${CLAUDE_SKILL_DIR}/scripts/bench.py run --name <candidate> --before '<old cmd> {input}' --after '<new cmd> {input}' --input <file> --gen '<generator> --seed {seed} --out {out}'`. It runs each measurement in a fresh process, interleaves before and after, adds an input from a new random seed every time, compares every output with the old implementation, and reports medians, max RSS and p. A mismatch means the candidate does not count. When the system is not a command (a page, a service, a query), measure with the field's tool and write raw results to `bench/runs/` yourself.
+- A Stop hook runs `scripts/gate.py`. It blocks ending while any row is `untested`, a kept row lacks raw data newer than the lock, locked files changed, or there is no `Verified:` line. Run it yourself any time: `python3 ${CLAUDE_SKILL_DIR}/scripts/gate.py`.
 
-Create the ledger before the first change and update it after every measurement.
+## Working the list
+
+1. Profile first, then build the list from [references/any-system.md](references/any-system.md); several systems: [references/cross-domain.md](references/cross-domain.md); check for missing categories against [references/checklists/](references/checklists/).
+2. Before converging, prototype at least three structurally different strategies (different algorithm, data layout, language or library, architecture) and measure each. When subagents are available, run independent strategies in parallel; parallel attempts beat longer single attempts in GSO.
+3. A `shortcut` row stays only if it holds on the generated inputs and the change is still correct for every valid input; prefer the structural change that removes the cost.
+4. Include the lower layer (native code, SIMD, the database, the GPU) when the profile points there.
+5. Keep small significant gains; they compound. Readability and code size do not decide; on equal numbers the smaller code wins.
+6. Dependencies, writing your own (large gain means write your own), and language comparisons: [references/changes.md](references/changes.md). Measurement details: [references/benchmarking.md](references/benchmarking.md). Commands: [references/tools.md](references/tools.md).
 
 ## Done
 
-Done means the primary metric has reached its limit (a written formula, or the best known implementation measured), or no row is `untested`. Add rows as you discover candidates. A milestone, a large win, or a long turn is not done: if you are about to end with a summary that names the next candidate, measure it instead. Stop for the user only when a `needs user` row blocks the remaining work, or something else blocks you.
-
-## Evidence
-
-- The primary metric is what the user or payer feels end to end; check the others for regressions.
-- Every number you report comes from a file in `bench/` written by a command you ran.
-- Before and after use the same build mode, machine and inputs, run interleaved, with a significance test.
-- Inputs include real data, worst cases, and random data regenerated with a new seed each round, and the benchmark checks output against the old implementation, so a change tuned to one input fails.
-- Before reporting, have a fresh context (a subagent, or a new session) rerun the benchmark and the output comparison using only the ledger.
-
-Readability and code size do not decide; measured numbers do, and on equal numbers the smaller code wins.
-
-## Building the list
-
-- Any system: [references/any-system.md](references/any-system.md). Several systems: [references/cross-domain.md](references/cross-domain.md).
-- To catch missing categories: [references/checklists/](references/checklists/) (program layers, then one file per field).
-- Dependencies (configure, switch, fork, write your own; large gain means write your own) and language comparisons: [references/changes.md](references/changes.md).
-- Measurement details and what does not count: [references/benchmarking.md](references/benchmarking.md). Commands: [references/tools.md](references/tools.md).
+The primary metric reached its limit (a written formula, or the best known implementation measured), or `gate.py` passes with no `untested` rows. Before that, have a fresh context (a subagent) rerun the benchmark and output comparison from the ledger alone and record `Verified: <who> <date> <result>`. A milestone or a large win is not done.
 
 ## Needs the user
 
@@ -47,4 +52,4 @@ Apply on your own only what keeps output, guarantees and what users see identica
 
 ## Report
 
-A table from the ledger: metric, before, after, limit, and × from the limit, with one row per tier when several systems are involved. Then the environment and its differences from production, rejected candidates with their numbers, `needs user` proposals, and the remaining gap with the next candidate.
+A table from the ledger: metric, before, after, limit, × from the limit, one row per tier across systems. Then the environment and differences from production, rejected candidates with numbers, `needs user` proposals, and the remaining gap with the next candidate.
