@@ -20,7 +20,7 @@ The tier with the largest share, and the longest serial chain of dependent steps
 
 ## One candidate list for the whole system
 
-Collect candidates from every domain file that applies into a single list, ordered by their share of the end-to-end metric × expected gain.
+Collect candidates from every system into the single ledger (`bench/candidates.md`), ordered by their share of the end-to-end metric × expected gain.
 
 Moving work between tiers is a candidate in its own right, measured on the total:
 

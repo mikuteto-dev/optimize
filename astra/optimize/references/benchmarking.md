@@ -5,7 +5,7 @@
 - Put benchmarks and tests where the project keeps them (`Benchmark*` in `*_test.go`, `benches/`, `bench/`); create `bench/` if there is nothing. They stay in the repo so later changes can be checked against them.
 - Use several inputs: real data, random, worst case.
 - Verify the output inside the benchmark (value or checksum), and pass results to `std::hint::black_box`, Go's `b.Loop()` or mitata's `do_not_optimize` so the compiler cannot delete the work.
-- Freeze the benchmarks and tests before optimizing. Changing them mid-way makes before and after incomparable.
+- Freeze the benchmarks and tests before optimizing. Changing them mid-way makes before and after incomparable. For random inputs, freeze the generator and change only the seed each round.
 
 ## Measuring
 

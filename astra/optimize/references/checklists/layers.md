@@ -1,8 +1,6 @@
 # Layers
 
-These are the program-level layers that apply to any code. The levers outside the program (client, network, database, GPU, devices, infrastructure) are in [domains/](domains/).
-
-List candidates from every layer, then order them by profile share × expected gain. Price costs on today's hardware: an L1 hit is about 4 cycles and a trip to main memory about 100 ns, so old tricks such as lookup tables must win in measurement before they stay.
+Program-level layers that apply to any code. Use this to check the candidate ledger for missing categories; the other files in this directory do the same for systems outside the program. Price costs on today's hardware: an L1 hit is about 4 cycles and a trip to main memory about 100 ns, so old tricks such as lookup tables must win in measurement before they stay.
 
 1. **Remove work**: don't compute, read, write or send. Build-time and compile-time precomputation (`const fn`, `go generate`, embedded tables), lookup tables that fit in cache, caching, incremental updates, lazy evaluation, early return. Merge duplicate validation only when the same check runs on the same data inside the same trust boundary.
 2. **Algorithm**: complexity, constant factors, specialization to the input distribution (linear search for small n, binary search on sorted data, counting sort for narrow ranges).

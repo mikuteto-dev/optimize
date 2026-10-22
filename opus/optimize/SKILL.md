@@ -1,77 +1,50 @@
 ---
 name: optimize
-description: Minimize measurable resource use and waiting (CPU time, latency, memory, bytes, queries, frame time, energy, cost) toward the theoretical limit, with benchmarks that prove each gain. Use when writing, reviewing or choosing dependencies for code, sites, services, databases or assets that can get faster or lighter, or when asked to optimize, speed up, shrink or benchmark.
+description: Drive runtime, memory, size, latency, energy or cost toward the theoretical limit with measured, reproducible evidence. Use when code, sites, services, databases or assets can get faster or lighter, or when asked to optimize, speed up, shrink or benchmark.
 argument-hint: "[off]"
 license: MIT
 ---
 
 # Optimize
 
-The user wants software that uses as little of every resource as the hardware allows, the way Famicom and embedded programmers counted every byte and cycle. They have watched agents call code "good enough", reject a language change without measuring it, and wait to be asked. So on every task you touch, look for gains yourself, measure them, and keep going until the evidence says there is nothing left worth taking.
+The user wants every resource treated as scarce, the way Famicom and embedded programmers counted every byte and cycle. You already know the techniques. This skill exists because agents fail at this work in predictable ways: they stop after the first win, call code good enough without measuring, reject other languages, libraries or their own implementation without trying them, tune to the benchmark input, and quote numbers no file backs. The rules below close those gaps.
 
 Active until the user says "stop optimize".
 
-## What counts
+## Ledger
 
-**Metrics**: anything measurable that a computer spends or a person waits for. CPU time, latency (p50 / p99 / p99.9) and throughput; memory of every kind (RSS, heap, VRAM, database buffers, flash and RAM on devices); storage (binary, bundle, assets, images, tables and indexes, container images); network bytes, requests and round trips; database queries and rows scanned; startup, load and build time; frame time; energy and battery; cloud cost. The domain files list the metrics that matter for each kind of system.
+Keep the work in `bench/` in the repo. Files survive context compaction, and they are the evidence for every claim.
 
-**Scope**: the whole system that delivers the result, not only the function in front of you: algorithm and code, data structures and formats, dependencies, build and toolchain, runtime settings, client, network and caching, server, database queries and schema, storage, GPU, assets, deployment and infrastructure, and where each piece of work runs.
+- `bench/candidates.md`: one row per candidate with its area, hypothesis, status (`untested`, `kept`, `reverted`, `needs user`), before, after, significance, and the raw-data file.
+- The benchmark, the correctness check, and the raw measurements.
 
-## What done means
+Create the ledger before the first change and update it after every measurement.
 
-The task ends when one of these holds, not when a target or a first speedup is reached:
+## Done
 
-- the primary metric is at the theoretical limit, or at the best known implementation of the same job, or
-- every candidate on your list has been measured, including ones you found along the way.
+Done means the primary metric has reached its limit (a written formula, or the best known implementation measured), or no row is `untested`. Add rows as you discover candidates. A milestone, a large win, or a long turn is not done: if you are about to end with a summary that names the next candidate, measure it instead. Stop for the user only when a `needs user` row blocks the remaining work, or something else blocks you.
 
-A long turn, a finished milestone, or a big first win is not a reason to stop and report. If you are about to end with a summary that names the next optimization, run that optimization instead. Stop to ask only when the next step needs the user's choice (see "Changes that need the user") or something blocks you.
+## Evidence
 
-## How to work
+- The primary metric is what the user or payer feels end to end; check the others for regressions.
+- Every number you report comes from a file in `bench/` written by a command you ran.
+- Before and after use the same build mode, machine and inputs, run interleaved, with a significance test.
+- Inputs include real data, worst cases, and random data regenerated with a new seed each round, and the benchmark checks output against the old implementation, so a change tuned to one input fails.
+- Before reporting, have a fresh context (a subagent, or a new session) rerun the benchmark and the output comparison using only the ledger.
 
-1. **Measure before changing anything.** Pick one primary metric and watch the others for regressions. Write the benchmark and its correctness check first and keep them in the repo; they are the evidence for every later claim. Details: [references/benchmarking.md](references/benchmarking.md).
-2. **Compute the limit.** Write the formula (bytes ÷ bandwidth, round trips × latency, operations ÷ throughput, minimum bytes). Where no formula exists, write "not computable" and measure the best known implementation instead. A made-up limit misleads every decision after it.
-3. **Profile, then list candidates.** Use profilers, traces, query plans and hardware counters rather than intuition; editing before profiling spends effort on code that may not matter. List candidates from the program-level layers in [references/layers.md](references/layers.md) and from every domain file that applies, ordered by profile share × expected gain.
-4. **One change, one measurement.** Keep a change only if the gain is statistically significant; keep small significant gains, since they compound. Confirm microbenchmark wins end to end, because lookup tables, unrolling and inlining can evict cache and lose overall. Read the generated assembly of hot loops.
-5. **Prove the output is unchanged.** Run the tests, diff outputs, and differentially fuzz the old implementation against the new one. After `unsafe`, SIMD, lock-free code or concurrency, run the race detector or sanitizers. The solution must be correct for every valid input, not only the benchmark input.
+Readability and code size do not decide; measured numbers do, and on equal numbers the smaller code wins.
 
-Readability, code size and convention are not reasons to drop a candidate; the user has said so explicitly. Measured numbers decide. Added code earns its place with a significant gain, and on equal numbers the smaller code wins.
+## Building the list
 
-## Domains
+- Any system: [references/any-system.md](references/any-system.md). Several systems: [references/cross-domain.md](references/cross-domain.md).
+- To catch missing categories: [references/checklists/](references/checklists/) (program layers, then one file per field).
+- Dependencies (configure, switch, fork, write your own; large gain means write your own) and language comparisons: [references/changes.md](references/changes.md).
+- Measurement details and what does not count: [references/benchmarking.md](references/benchmarking.md). Commands: [references/tools.md](references/tools.md).
 
-No list of fields is complete, so the method comes first: [references/any-system.md](references/any-system.md) derives metrics and levers for any system by drawing the path from input to result, listing what each component consumes, applying the generic levers (less, once, smaller, closer, together, parallel, better timing, better hardware, better algorithm), and pulling in the field's own guides, profilers and best known implementation. Use it for every task, including fields with no file below.
+## Needs the user
 
-When the task touches more than one system, also read [references/cross-domain.md](references/cross-domain.md): the primary metric becomes the end-to-end one, a trace across tiers decides where to start, candidates from all domains go into one list, and a change that only moves cost from one tier to another does not count.
-
-Worked examples per field, read for the systems the task touches:
-
-- Web frontend (bytes, requests, Core Web Vitals, main thread): [references/domains/web-frontend.md](references/domains/web-frontend.md)
-- Backend services (tail latency, throughput, round trips): [references/domains/backend.md](references/domains/backend.md)
-- Databases (plans, indexes, storage, connections): [references/domains/database.md](references/domains/database.md)
-- 3D, games and real-time graphics (frame budget, GPU, VRAM): [references/domains/graphics.md](references/domains/graphics.md)
-- Mobile apps (startup, size, jank, energy): [references/domains/mobile.md](references/domains/mobile.md)
-- Embedded (flash, RAM, cycles, current): [references/domains/embedded.md](references/domains/embedded.md)
-- Data pipelines and ML (throughput, VRAM, GPU idle time): [references/domains/data-ml.md](references/domains/data-ml.md)
-- Infrastructure and cloud cost (images, sizing, cold start, egress): [references/domains/infra.md](references/domains/infra.md)
-- Distributed systems (fan-out, hops, coordination): [references/domains/distributed.md](references/domains/distributed.md)
-- Desktop apps and CLIs (startup, idle, multi-process memory): [references/domains/desktop.md](references/domains/desktop.md)
-- Audio, video and images (real-time factor, hardware codecs, underruns): [references/domains/media.md](references/domains/media.md)
-- Numerical and scientific computing (roofline, BLAS, tiling): [references/domains/hpc.md](references/domains/hpc.md)
-- LLM and agent apps (tokens, cache hits, calls per task): [references/domains/llm-apps.md](references/domains/llm-apps.md)
-
-## Honest numbers
-
-The user expects benchmark gaming to happen and wants none of it. A number counts only if the benchmark input, conditions and timed region are the same before and after, the work is not hard-coded for the benchmark input, moved out of the timed region, or deleted by the compiler, and every run is reported. The full list of what does not count is in [references/benchmarking.md](references/benchmarking.md).
-
-## Changes that need the user
-
-Keep output, guarantees and what users see identical for anything you apply on your own. Some of the largest wins change them: precision, output or data formats, APIs, consistency and durability, schema, visual quality, supported platforms, panic, debug-info, GC and allocator settings, architecture and infrastructure. Prototype and measure those, then propose the ones that improve the primary metric 2× or more or close at least half the remaining gap, and apply them after the user picks. The list and the proposal format are in [references/changes.md](references/changes.md).
-
-For dependencies, compare configuring the current library, switching, forking and trimming, and writing your own, and take the best gain ÷ cost. Write your own when the gain is large. For language changes, implement the hot path in each candidate and measure before recommending or rejecting. Both are in [references/changes.md](references/changes.md).
-
-Correctness, validation at trust boundaries, error handling that prevents data loss, security, constant-time crypto and auth code, and accessibility stay intact; numbers gained by cutting them do not count.
+Apply on your own only what keeps output, guarantees and what users see identical. Prototype and measure changes to precision, formats, APIs, consistency or durability, schema, visual quality, supported platforms, operational settings, architecture or infrastructure; mark them `needs user` and propose those worth 2× or more, or at least half the remaining gap. Correctness, validation at trust boundaries, data-loss handling, security, constant-time crypto code and accessibility stay intact.
 
 ## Report
 
-Lead with a table: metric, before, after, limit (with its formula or reference implementation), and × from the limit. The primary metric goes first, and regressions in other metrics go in the same table. Then list the environment and its differences from production, run counts and significance, candidates that did not help with their numbers, proposals that need the user, and unmeasured candidates marked as estimates. End with the remaining gap and the next candidate, not with "good enough".
-
-Tool commands per language: [references/tools.md](references/tools.md).
+A table from the ledger: metric, before, after, limit, and × from the limit, with one row per tier when several systems are involved. Then the environment and its differences from production, rejected candidates with their numbers, `needs user` proposals, and the remaining gap with the next candidate.
