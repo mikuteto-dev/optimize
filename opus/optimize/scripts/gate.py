@@ -114,8 +114,11 @@ def main():
         return 0
     reason = "optimize: not done yet.\n- " + "\n- ".join(found[:15])
     if hook:
-        if data.get("stop_hook_active") and not (root / "bench/candidates.md").exists():
-            return 0
+        if not (root / "bench/candidates.md").exists():
+            marker = Path(os.environ.get("TMPDIR", "/tmp")) / f"optimize-gate-{data.get('session_id', 'none')}"
+            if data.get("stop_hook_active") or marker.exists():
+                return 0
+            marker.touch()
         print(json.dumps({"decision": "block", "reason": reason}))
         return 0
     print(reason)
